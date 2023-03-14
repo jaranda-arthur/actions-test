@@ -25,6 +25,8 @@ jobs:
         id: changed
         run: |
           git status
+          value = git diff --quiet dev HEAD -- test/
+          echo $value
           if git diff --quiet main HEAD -- test/; then
             echo "::set-output name=changed::true"
           else
