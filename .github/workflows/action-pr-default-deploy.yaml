@@ -3,6 +3,10 @@ name: PR Default Deploy
 on:
   issue_comment:
     types: [created, edited]
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'test/**'
 
 jobs:
   deploy:
@@ -18,15 +22,7 @@ jobs:
 
       - name: Default deploy
         run: |
-          export CLOUDSDK_PYTHON=/usr/bin/python
-          pushd servers/default
-          python psyroid/tool/file_unifier.py
-          
-          gcloud app deploy app-dev.yaml -v dev-pr-${{ github.event.pull_request.number }} --project=dev-jaranda-kr --no-promote
-          
-          gcloud app deploy app-cron-dev.yaml -v dev-pr-${{ github.event.pull_request.number }} --project=dev-jaranda-kr --no-promote
-          
-          popd
+          echo test wow
 
       - name: Add deploy comment
         uses: actions/github-script@v5
