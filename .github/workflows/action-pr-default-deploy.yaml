@@ -14,7 +14,7 @@ jobs:
     if: |
       contains(github.event.comment.html_url, '/pull/') &&
       contains(github.event.comment.body, '/deploy') &&
-      if: ${{ steps.changed.outputs.changed == 'true' }}
+      ${{ steps.changed.outputs.changed == 'true' }}
 
     steps:
       - name: Checkout
