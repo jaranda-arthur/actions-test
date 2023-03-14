@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Checkout Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          hub pr checkout ${{ github.event.pull_request.number }}
+
       - name: Check for changes in directory
         id: changed
         run: |
