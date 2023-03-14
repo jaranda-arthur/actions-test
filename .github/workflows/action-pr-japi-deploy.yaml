@@ -18,7 +18,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          hub pr checkout ${{ github.event.pull_request.number }}
+          hub pr checkout ${{ github.event.issue.number }}
 
       - name: SetUp JDK 17
         uses: actions/setup-java@v3
@@ -29,7 +29,7 @@ jobs:
         run: |
           cd projects
           chmod +x gradlew
-          export VERSION=dev-pr-${{ github.event.pull_request.number }}
+          export VERSION=dev-pr-${{ github.event.issue.number }}
           ./gradlew :domain-api:appengineDeploy -Penvironment=dev
 
   #    - id: 'deploy'
@@ -37,7 +37,7 @@ jobs:
   #      with:
   #          project_id: 'dev-jaranda-kr'
   #          appEngineDirectory: 'projects/api/domain-api/src/main/appengine/dev'
-  #          version: 'dev-pr-${{ github.event.pull_request.number }}'
+  #          version: 'dev-pr-${{ github.event.issue.number }}'
   #          promote: false
       - name: Add deploy comment
         uses: actions/github-script@v5
@@ -48,5 +48,5 @@ jobs:
                   issue_number: context.issue.number,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  body: 'https://dev-pr-${{ github.event.pull_request.number }}-dot-japi-dot-dev-jaranda-kr.an.r.appspot.com'
+                  body: 'https://dev-pr-${{ github.event.issue.number }}-dot-japi-dot-dev-jaranda-kr.an.r.appspot.com'
                 })

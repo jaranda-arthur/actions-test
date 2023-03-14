@@ -19,7 +19,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          hub pr checkout ${{ github.event.pull_request.number }}
+          hub pr checkout ${{ github.event.issue.number }}
 
       - name: Check for changes in directory
         id: changed
