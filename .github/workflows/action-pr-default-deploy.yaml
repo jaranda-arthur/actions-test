@@ -13,15 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.comment.html_url, '/pull/') &&
-      contains(github.event.comment.body, '/deploy')
+      contains(github.event.comment.body, '/deploy') &&
+      if: ${{ steps.changed.outputs.changed == 'true' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Check for changes in directory
+        id: changed
+        run: |
+          if git diff --quiet main HEAD -- test/; then
+            echo "::set-output name=changed::false"
+          else
+            echo "::set-output name=changed::true"
+          fi
+
       - name: Default deploy
         run: |
-          echo ${{ github.event.pull_request.number }}
+          echo ${{ github.event.issue.number }}
 
       - name: Add deploy comment
         uses: actions/github-script@v5
@@ -32,5 +42,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'default: https://dev-pr-${{ github.event.pull_request.number }}-dot-dev-jaranda-kr.an.r.appspot.com \n cron: https://dev-pr-${{ github.event.pull_request.number }}-dot-cron-dot-dev-jaranda-kr.an.r.appspot.com'
+              body: 'default: https://dev-pr-${{ github.event.issue.number }}-dot-dev-jaranda-kr.an.r.appspot.com \n cron: https://dev-pr-${{ github.event.issue.number }}-dot-cron-dot-dev-jaranda-kr.an.r.appspot.com'
             })
