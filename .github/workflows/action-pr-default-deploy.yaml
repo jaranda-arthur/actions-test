@@ -22,10 +22,10 @@ jobs:
       - name: Check for changes in directory
         id: changed
         run: |
-          if git diff --quiet main HEAD -- test; then
-            echo "::set-output name=changed::false"
-          else
+          if git diff main HEAD -- test; then
             echo "::set-output name=changed::true"
+          else
+            echo "::set-output name=changed::false"
           fi
 
       - name: value
