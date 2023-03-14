@@ -21,7 +21,7 @@ jobs:
 
       - name: Default deploy
         run: |
-          echo test wow
+          echo ${{ github.event.pull_request.number }}
 
       - name: Add deploy comment
         uses: actions/github-script@v5
