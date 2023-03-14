@@ -1,0 +1,41 @@
+name: PR Default Deploy
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    if: |
+      ${{ !github.event.pull_request.draft }}
+      && contains(github.event.comment.html_url, '/pull/')
+      && contains(github.event.comment.body, '/deploy')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Default deploy
+        run: |
+          export CLOUDSDK_PYTHON=/usr/bin/python
+          pushd servers/default
+          python psyroid/tool/file_unifier.py
+          
+          gcloud app deploy app-dev.yaml -v dev-pr-${{ github.event.pull_request.number }} --project=dev-jaranda-kr --no-promote
+          
+          gcloud app deploy app-cron-dev.yaml -v dev-pr-${{ github.event.pull_request.number }} --project=dev-jaranda-kr --no-promote
+          
+          popd
+
+      - name: Add deploy comment
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'default: https://dev-pr-${{ github.event.pull_request.number }}-dot-dev-jaranda-kr.an.r.appspot.com \n cron: https://dev-pr-${{ github.event.pull_request.number }}-dot-cron-dot-dev-jaranda-kr.an.r.appspot.com'
+            })

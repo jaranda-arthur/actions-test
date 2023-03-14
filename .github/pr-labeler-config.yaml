@@ -1,0 +1,4 @@
+PROD: '*PROD-*'
+PRG: '*PRG-*'
+AT: '*AT-*'
+staging-merge: '*staging-merge*'
