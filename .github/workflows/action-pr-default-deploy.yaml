@@ -1,56 +1,56 @@
-# name: PR Default Deploy
+name: PR Default Deploy
 
-# on:
-#   issue_comment:
-#     types: [created, edited]
+on:
+  issue_comment:
+    types: [created, edited]
 
-# jobs:
-#   preprocess-deploy:
-#     runs-on: ubuntu-latest
-#     if: |
-#       contains(github.event.comment.html_url, '/pull/') &&
-#       contains(github.event.comment.body, '/deploy')
+jobs:
+  preprocess-deploy:
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.comment.html_url, '/pull/') &&
+      contains(github.event.comment.body, '/deploy')
 
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-#       - name: Checkout Pull Request
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         run: |
-#           gh pr checkout ${{ github.event.issue.number }}
+      - name: Checkout Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.issue.number }}
 
-#       - name: Check for changes in directory
-#         id: changed
-#         run: |
-#           if git diff --quiet main HEAD -- test/; then
-#             echo "::set-output name=changed::true"
-#           else
-#             echo "::set-output name=changed::false"
-#           fi
+      - name: Check for changes in directory
+        id: changed
+        run: |
+          if git diff --quiet main HEAD -- test/; then
+            echo "::set-output name=changed::true"
+          else
+            echo "::set-output name=changed::false"
+          fi
 
-#   deploy:
-#     need: preprocess-deploy
-#     runs-on: ubuntu-latest
-#     - name: value
-#       run: |
-#         echo ${{ steps.changed.outputs.changed }}
+  deploy:
+    need: preprocess-deploy
+    runs-on: ubuntu-latest
+    - name: value
+      run: |
+        echo ${{ steps.changed.outputs.changed }}
 
-#     - name: Default deploy
-#       if: |
-#         steps.changed.outputs.changed == 'true'
-#       run: |
-#         echo ${{ github.event.issue.number }}
+    - name: Default deploy
+      if: |
+        steps.changed.outputs.changed == 'true'
+      run: |
+        echo ${{ github.event.issue.number }}
 
-#     - name: Add deploy comment
-#       uses: actions/github-script@v5
-#       with:
-#         github-token: ${{secrets.GITHUB_TOKEN}}
-#         script: |
-#           github.rest.issues.createComment({
-#             issue_number: context.issue.number,
-#             owner: context.repo.owner,
-#             repo: context.repo.repo,
-#             body: 'default: https://dev-pr-${{ github.event.issue.number }}-dot-dev-jaranda-kr.an.r.appspot.com \n cron: https://dev-pr-${{ github.event.issue.number }}-dot-cron-dot-dev-jaranda-kr.an.r.appspot.com'
-#           })
+    - name: Add deploy comment
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'default: https://dev-pr-${{ github.event.issue.number }}-dot-dev-jaranda-kr.an.r.appspot.com \n cron: https://dev-pr-${{ github.event.issue.number }}-dot-cron-dot-dev-jaranda-kr.an.r.appspot.com'
+          })
